@@ -2,6 +2,7 @@
 
 var _ = require("..");
 var _utils = require("../../../utils");
+var _requests = require("../../constants/requests");
 var thunkActions = _interopRequireWildcard(require("./app"));
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -43,7 +44,8 @@ jest.mock('../../../utils', () => _objectSpread({
 }, jest.requireActual('../../../utils')));
 const testValue = {
   data: {
-    assets: 'test VALUE'
+    assets: 'test VALUE',
+    videos: 'vIDeO vALUe'
   }
 };
 describe('app thunkActions', () => {
@@ -67,6 +69,14 @@ describe('app thunkActions', () => {
       dispatchedAction.fetchBlock.onSuccess(testValue);
       expect(dispatch).toHaveBeenCalledWith(_.actions.app.setBlockValue(testValue));
     });
+    it('dispatches failRequest with fetchBlock requestKey on failure', () => {
+      dispatch.mockClear();
+      dispatchedAction.fetchBlock.onFailure(testValue);
+      expect(dispatch).toHaveBeenCalledWith(_.actions.requests.failRequest({
+        requestKey: _requests.RequestKeys.fetchBlock,
+        error: testValue
+      }));
+    });
   });
   describe('fetchStudioView', () => {
     beforeEach(() => {
@@ -81,10 +91,13 @@ describe('app thunkActions', () => {
       dispatchedAction.fetchStudioView.onSuccess(testValue);
       expect(dispatch).toHaveBeenCalledWith(_.actions.app.setStudioView(testValue));
     });
-    it('dispatches setStudioView on failure', () => {
+    it('dispatches failRequest with fetchStudioView requestKey on failure', () => {
       dispatch.mockClear();
       dispatchedAction.fetchStudioView.onFailure(testValue);
-      expect(dispatch).toHaveBeenCalledWith(_.actions.app.setStudioView(testValue));
+      expect(dispatch).toHaveBeenCalledWith(_.actions.requests.failRequest({
+        requestKey: _requests.RequestKeys.fetchStudioView,
+        error: testValue
+      }));
     });
   });
   describe('fetchUnit', () => {
@@ -100,10 +113,57 @@ describe('app thunkActions', () => {
       dispatchedAction.fetchUnit.onSuccess(testValue);
       expect(dispatch).toHaveBeenCalledWith(_.actions.app.setUnitUrl(testValue));
     });
-    it('dispatches actions.app.setUnitUrl on failure', () => {
+    it('dispatches failRequest with fetchUnit requestKey on failure', () => {
       dispatch.mockClear();
       dispatchedAction.fetchUnit.onFailure(testValue);
-      expect(dispatch).toHaveBeenCalledWith(_.actions.app.setUnitUrl(testValue));
+      expect(dispatch).toHaveBeenCalledWith(_.actions.requests.failRequest({
+        requestKey: _requests.RequestKeys.fetchUnit,
+        error: testValue
+      }));
+    });
+  });
+  describe('fetchAssets', () => {
+    beforeEach(() => {
+      thunkActions.fetchAssets()(dispatch);
+      [[dispatchedAction]] = dispatch.mock.calls;
+    });
+    it('dispatches fetchAssets action', () => {
+      expect(dispatchedAction.fetchAssets).not.toEqual(undefined);
+    });
+    it('dispatches actions.app.setAssets on success', () => {
+      dispatch.mockClear();
+      dispatchedAction.fetchAssets.onSuccess(testValue);
+      expect(dispatch).toHaveBeenCalledWith(_.actions.app.setAssets(testValue));
+    });
+    it('dispatches failRequest with fetchAssets requestKey on failure', () => {
+      dispatch.mockClear();
+      dispatchedAction.fetchAssets.onFailure(testValue);
+      expect(dispatch).toHaveBeenCalledWith(_.actions.requests.failRequest({
+        requestKey: _requests.RequestKeys.fetchAssets,
+        error: testValue
+      }));
+    });
+  });
+  describe('fetchVideos', () => {
+    beforeEach(() => {
+      thunkActions.fetchVideos()(dispatch);
+      [[dispatchedAction]] = dispatch.mock.calls;
+    });
+    it('dispatches fetchAssets action', () => {
+      expect(dispatchedAction.fetchVideos).not.toEqual(undefined);
+    });
+    it('dispatches actions.app.setVideos on success', () => {
+      dispatch.mockClear();
+      dispatchedAction.fetchVideos.onSuccess(testValue);
+      expect(dispatch).toHaveBeenCalledWith(_.actions.app.setVideos(testValue.data.videos));
+    });
+    it('dispatches failRequest with fetchVideos requestKey on failure', () => {
+      dispatch.mockClear();
+      dispatchedAction.fetchVideos.onFailure(testValue);
+      expect(dispatch).toHaveBeenCalledWith(_.actions.requests.failRequest({
+        requestKey: _requests.RequestKeys.fetchVideos,
+        error: testValue
+      }));
     });
   });
   describe('fetchCourseDetails', () => {
@@ -119,10 +179,13 @@ describe('app thunkActions', () => {
       dispatchedAction.fetchCourseDetails.onSuccess(testValue);
       expect(dispatch).toHaveBeenCalledWith(_.actions.app.setCourseDetails(testValue));
     });
-    it('dispatches actions.app.setUnitUrl on failure', () => {
+    it('dispatches failRequest with fetchCourseDetails requestKey on failure', () => {
       dispatch.mockClear();
       dispatchedAction.fetchCourseDetails.onFailure(testValue);
-      expect(dispatch).toHaveBeenCalledWith(_.actions.app.setCourseDetails(testValue));
+      expect(dispatch).toHaveBeenCalledWith(_.actions.requests.failRequest({
+        requestKey: _requests.RequestKeys.fetchCourseDetails,
+        error: testValue
+      }));
     });
   });
   describe('initialize', () => {
@@ -173,32 +236,6 @@ describe('app thunkActions', () => {
       calls[1][0].saveBlock.onSuccess(response);
       expect(dispatch).toHaveBeenCalledWith(_.actions.app.setSaveResponse(response));
       expect(returnToUnit).toHaveBeenCalled();
-    });
-  });
-  describe('fetchAssets', () => {
-    it('dispatches fetchAssets action with setAssets for onSuccess param', () => {
-      const response = {
-        data: {
-          assets: 'testRESPONSE'
-        }
-      };
-      thunkActions.fetchAssets()(dispatch);
-      const [[dispatchCall]] = dispatch.mock.calls;
-      dispatchCall.fetchAssets.onSuccess(response);
-      expect(dispatch).toHaveBeenCalledWith(_.actions.app.setAssets(response));
-    });
-  });
-  describe('fetchVideos', () => {
-    it('dispatches fetchVideos action with setVideos for onSuccess param', () => {
-      const response = {
-        data: {
-          videos: 'testRESPONSE'
-        }
-      };
-      thunkActions.fetchVideos()(dispatch);
-      const [[dispatchCall]] = dispatch.mock.calls;
-      dispatchCall.fetchVideos.onSuccess(response);
-      expect(dispatch).toHaveBeenCalledWith(_.actions.app.setVideos(response.data.videos));
     });
   });
   describe('uploadImage', () => {

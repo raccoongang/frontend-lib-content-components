@@ -54,7 +54,7 @@ const filteredList = _ref => {
     let {
       displayName
     } = _ref2;
-    return displayName.toLowerCase().includes(searchString.toLowerCase());
+    return displayName?.toLowerCase().includes(searchString?.toLowerCase());
   });
 };
 exports.filteredList = filteredList;

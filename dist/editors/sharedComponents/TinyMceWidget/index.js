@@ -31,7 +31,7 @@ var _ImageUploadModal = _interopRequireDefault(require("../ImageUploadModal"));
 var _SourceCodeModal = _interopRequireDefault(require("../SourceCodeModal"));
 var hooks = _interopRequireWildcard(require("./hooks"));
 var _jsxRuntime = require("react/jsx-runtime");
-const _excluded = ["editorType", "editorRef", "disabled", "id", "assets", "isLibrary", "lmsEndpointUrl", "studioEndpointUrl", "updateContent"];
+const _excluded = ["editorType", "editorRef", "disabled", "id", "editorContentHtml", "assets", "isLibrary", "lmsEndpointUrl", "studioEndpointUrl", "updateContent"];
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -48,6 +48,8 @@ const TinyMceWidget = _ref => {
       editorRef,
       disabled,
       id,
+      editorContentHtml,
+      // editorContent in html form
       // redux
       assets,
       isLibrary,
@@ -66,8 +68,11 @@ const TinyMceWidget = _ref => {
     openSourceCodeModal,
     closeSourceCodeModal
   } = hooks.sourceCodeModalToggle(editorRef);
-  const images = hooks.filterAssets({
-    assets
+  const {
+    imagesRef
+  } = hooks.useImages({
+    assets,
+    editorContentHtml
   });
   const imageSelection = hooks.selectedImage(null);
   return /*#__PURE__*/(0, _jsxRuntime.jsxs)(_reactRedux.Provider, {
@@ -76,7 +81,7 @@ const TinyMceWidget = _ref => {
       isOpen: isImgOpen,
       close: closeImgModal,
       editorRef: editorRef,
-      images: images,
+      images: imagesRef,
       editorType: editorType,
       lmsEndpointUrl: lmsEndpointUrl
     }, imageSelection)), editorType === 'text' ? /*#__PURE__*/(0, _jsxRuntime.jsx)(_SourceCodeModal.default, {
@@ -87,7 +92,7 @@ const TinyMceWidget = _ref => {
       id: id,
       disabled: disabled,
       onEditorChange: updateContent
-    }, hooks.editorConfig(_objectSpread({
+    }, hooks.editorConfig(_objectSpread(_objectSpread({
       openImgModal,
       openSourceCodeModal,
       editorType,
@@ -95,10 +100,9 @@ const TinyMceWidget = _ref => {
       isLibrary,
       lmsEndpointUrl,
       studioEndpointUrl,
-      images,
-      setSelection: imageSelection.setSelection,
-      clearSelection: imageSelection.clearSelection
-    }, props))))]
+      images: imagesRef,
+      editorContentHtml
+    }, imageSelection), props))))]
   });
 };
 exports.TinyMceWidget = TinyMceWidget;
@@ -111,6 +115,7 @@ TinyMceWidget.defaultProps = {
   assets: null,
   id: null,
   disabled: false,
+  editorContentHtml: undefined,
   updateContent: () => ({})
 };
 TinyMceWidget.propTypes = {
@@ -122,6 +127,7 @@ TinyMceWidget.propTypes = {
   studioEndpointUrl: _propTypes.default.string,
   id: _propTypes.default.string,
   disabled: _propTypes.default.bool,
+  editorContentHtml: _propTypes.default.string,
   updateContent: _propTypes.default.func
 };
 const mapStateToProps = state => ({

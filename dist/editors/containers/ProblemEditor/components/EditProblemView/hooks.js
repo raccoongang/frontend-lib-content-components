@@ -189,7 +189,6 @@ const checkForSettingDiscrepancy = _ref5 => {
   const problemSettings = reactSettingsParser.getSettings();
   const rawOlxSettings = reactSettingsParser.parseRawOlxSettings();
   let isMismatched = false;
-  // console.log(rawOlxSettings);
   Object.entries(rawOlxSettings).forEach(_ref6 => {
     let [key, value] = _ref6;
     if (value !== problemSettings[key]) {
