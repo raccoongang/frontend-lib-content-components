@@ -38,7 +38,7 @@ const handleSaveClicked = _ref => {
     returnFunction
   } = _ref;
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const destination = (0, _reactRedux.useSelector)(_redux.selectors.app.returnUrl);
+  const destination = returnFunction ? '' : (0, _reactRedux.useSelector)(_redux.selectors.app.returnUrl);
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const analytics = (0, _reactRedux.useSelector)(_redux.selectors.app.analytics);
   return () => saveBlock({
@@ -73,7 +73,7 @@ const handleCancel = _ref2 => {
   return navigateCallback({
     returnFunction,
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    destination: (0, _reactRedux.useSelector)(_redux.selectors.app.returnUrl),
+    destination: returnFunction ? '' : (0, _reactRedux.useSelector)(_redux.selectors.app.returnUrl),
     analyticsEvent: _analyticsEvt.default.editorCancelClick,
     // eslint-disable-next-line react-hooks/rules-of-hooks
     analytics: (0, _reactRedux.useSelector)(_redux.selectors.app.analytics)

@@ -58,7 +58,7 @@ const TextEditor = _ref => {
     return /*#__PURE__*/(0, _jsxRuntime.jsx)(_TinyMceWidget.default, {
       editorType: "text",
       editorRef: editorRef,
-      textValue: blockValue ? blockValue.data.data : '',
+      editorContentHtml: blockValue ? blockValue.data.data : '',
       setEditorRef: setEditorRef,
       minHeight: 500,
       height: "100%",

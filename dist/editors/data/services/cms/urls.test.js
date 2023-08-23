@@ -6,8 +6,10 @@ describe('cms url methods', () => {
   const blockId = 'block-v1-blOckIDTeST123';
   const v2BlockId = 'blOckIDTeST123';
   const learningContextId = 'lEarnIngCOntextId123';
+  const libraryLearningContextId = 'library-v1:libaryId123';
   const courseId = 'course-v1:courseId123';
-  const libraryV1Id = 'library-v1:libaryId123';
+  const libraryV1Id = 'lib-block-v1:libaryId123';
+  const libraryV2Id = 'lib:libaryId123';
   const language = 'la';
   const handout = '/aSSet@hANdoUt';
   const videoId = '123-SOmeVidEOid-213';
@@ -20,12 +22,21 @@ describe('cms url methods', () => {
         }]
       }
     };
-    it('returns the library page when given the library', () => {
+    it('returns the library page when given the v1 library', () => {
       expect((0, _urls.returnUrl)({
         studioEndpointUrl,
         unitUrl,
-        learningContextId: libraryV1Id
-      })).toEqual(`${studioEndpointUrl}/library/${libraryV1Id}`);
+        learningContextId: libraryLearningContextId
+      })).toEqual(`${studioEndpointUrl}/library/${libraryLearningContextId}`);
+    });
+    it('throws error when given the v2 library', () => {
+      expect(() => {
+        (0, _urls.returnUrl)({
+          studioEndpointUrl,
+          unitUrl,
+          learningContextId: libraryV2Id
+        });
+      }).toThrow('Return url not available (or needed) for V2 libraries');
     });
     it('returns url with studioEndpointUrl and unitUrl', () => {
       expect((0, _urls.returnUrl)({
@@ -34,7 +45,7 @@ describe('cms url methods', () => {
         learningContextId: courseId
       })).toEqual(`${studioEndpointUrl}/container/${unitUrl.data.ancestors[0].id}`);
     });
-    it('returns empty string if no unit url', () => {
+    it('throws error if no unit url', () => {
       expect((0, _urls.returnUrl)({
         studioEndpointUrl,
         unitUrl: null,
@@ -65,7 +76,7 @@ describe('cms url methods', () => {
       expect((0, _urls.block)({
         studioEndpointUrl,
         blockId: v2BlockId
-      })).toEqual(`${studioEndpointUrl}/api/xblock/v2/xblocks/${v2BlockId}`);
+      })).toEqual(`${studioEndpointUrl}/api/xblock/v2/xblocks/${v2BlockId}/fields/`);
     });
   });
   describe('blockAncestor', () => {
@@ -78,9 +89,17 @@ describe('cms url methods', () => {
         blockId
       })}?fields=ancestorInfo`);
     });
+    it('throws error with studioEndpointUrl, v2 blockId and ancestor query', () => {
+      expect(() => {
+        (0, _urls.blockAncestor)({
+          studioEndpointUrl,
+          blockId: v2BlockId
+        });
+      }).toThrow('Block ancestor not available (and not needed) for V2 blocks');
+    });
   });
   describe('blockStudioView', () => {
-    it('returns url with studioEndpointUrl, blockId and studio_view query', () => {
+    it('returns v1 url with studioEndpointUrl, blockId and studio_view query', () => {
       expect((0, _urls.blockStudioView)({
         studioEndpointUrl,
         blockId
@@ -88,6 +107,12 @@ describe('cms url methods', () => {
         studioEndpointUrl,
         blockId
       })}/studio_view`);
+    });
+    it('returns v2 url with studioEndpointUrl, v2 blockId and studio_view query', () => {
+      expect((0, _urls.blockStudioView)({
+        studioEndpointUrl,
+        blockId: v2BlockId
+      })).toEqual(`${studioEndpointUrl}/api/xblock/v2/xblocks/${v2BlockId}/view/studio_view/`);
     });
   });
   describe('courseAssets', () => {
