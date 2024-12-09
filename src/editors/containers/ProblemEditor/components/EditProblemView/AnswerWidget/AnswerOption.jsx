@@ -17,6 +17,7 @@ import { FeedbackBox } from './components/Feedback';
 import * as hooks from './hooks';
 import { ProblemTypeKeys } from '../../../../../data/constants/problem';
 import ExpandableTextArea from '../../../../../sharedComponents/ExpandableTextArea';
+import { answerRangeFormatRegex } from '../../../data/OLXParser';
 
 export const AnswerOption = ({
   answer,
@@ -38,6 +39,11 @@ export const AnswerOption = ({
   const setSelectedFeedback = hooks.setSelectedFeedback({ answer, hasSingleAnswer, dispatch });
   const setUnselectedFeedback = hooks.setUnselectedFeedback({ answer, hasSingleAnswer, dispatch });
   const { isFeedbackVisible, toggleFeedback } = hooks.useFeedback(answer);
+
+  const validateAnswerTitle = (value) => {
+    const cleanedValue = value.replace(/^\s+|\s+$/g, '');
+    return !cleanedValue.length || answerRangeFormatRegex.test(cleanedValue);
+  };
 
   const getInputArea = () => {
     if ([ProblemTypeKeys.SINGLESELECT, ProblemTypeKeys.MULTISELECT].includes(problemType)) {
@@ -64,8 +70,9 @@ export const AnswerOption = ({
       );
     }
     // Return Answer Range View
+    const isValidValue = validateAnswerTitle(answer.title);
     return (
-      <div>
+      <Form.Group isInvalid={!isValidValue}>
         <Form.Control
           as="textarea"
           className="answer-option-textarea text-gray-500 small"
@@ -75,11 +82,15 @@ export const AnswerOption = ({
           onChange={setAnswerTitle}
           placeholder={intl.formatMessage(messages.answerRangeTextboxPlaceholder)}
         />
+        {!isValidValue && (
+          <Form.Control.Feedback type="invalid">
+            <FormattedMessage {...messages.answerRangeErrorText} />
+          </Form.Control.Feedback>
+        )}
         <div className="pgn__form-switch-helper-text">
           <FormattedMessage {...messages.answerRangeHelperText} />
         </div>
-      </div>
-
+      </Form.Group>
     );
   };
 
