@@ -153,3 +153,7 @@ jest.mock('react-redux', () => {
 jest.mock('frontend-components-tinymce-advanced-plugins', () => ({
   a11ycheckerCss: '',
 }));
+
+jest.mock('@marijn/find-cluster-break', () => ({
+  isExtendingChar: jest.fn(() => false),
+}));

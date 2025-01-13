@@ -1,5 +1,3 @@
-@import "@openedx/paragon/scss/core/core";
-
 .dropzone-middle {
   border: 2px dashed #ccc;
 
@@ -14,24 +12,22 @@
 }
 
 .video-id-prompt {
-
   input::placeholder {
-    color: #454545;
-    // color: #5E35B1;
-    font-weight: '500';
-    word-wrap: 'break-word';
+    color: var(--pgn-color-gray-700);
+    font-weight: 500;
+    word-wrap: break-word;
   }
 
   button {
     border: none !important;
-    background-color: #FFFFFF;
+    background-color: var(--pgn-color-white);
   }
 
   .btn-icon.url-submit-button {
     &, &:active, &:hover {
       background-color: transparent !important;
       border: none !important;
-      color: $gray-500 !important;
+      color: var(--pgn-color-gray-500) !important;
     }
   }
 
