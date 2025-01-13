@@ -4,7 +4,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import '@testing-library/jest-dom/extend-expect';
 import React from 'react';
 import {
-  act, fireEvent, render, screen,
+  act, fireEvent, render, screen, waitFor,
 } from '@testing-library/react';
 
 import { VideoGallery } from './index';
@@ -117,14 +117,18 @@ describe('VideoGallery', () => {
     it('displays a list of videos', async () => {
       await renderComponent();
       initialVideos.forEach(video => (
-        expect(screen.getByText(video.client_video_id)).toBeInTheDocument()
+        waitFor(() => {
+          expect(screen.getByText(video.client_video_id)).toBeInTheDocument();
+        })
       ));
     });
     it('navigates to video upload page when there are no videos', async () => {
       expect(window.location.replace).not.toHaveBeenCalled();
       updateState({ videos: [] });
       await renderComponent();
-      expect(window.location.replace).toHaveBeenCalled();
+      waitFor(() => {
+        expect(window.location.replace).toHaveBeenCalled();
+      });
     });
     it.each([
       [/newest/i, [2, 1, 3]],
@@ -136,15 +140,17 @@ describe('VideoGallery', () => {
     ])('videos can be sorted %s', async (sortBy, order) => {
       await renderComponent();
 
-      fireEvent.click(screen.getByRole('button', {
-        name: /By newest/i,
-      }));
-      fireEvent.click(screen.getByRole('link', {
-        name: sortBy,
-      }));
-      const videoElements = screen.getAllByRole('button', { name: /client_id/ });
-      order.forEach((clientIdSuffix, idx) => {
-        expect(videoElements[idx]).toHaveTextContent(`client_id_${clientIdSuffix}`);
+      waitFor(() => {
+        fireEvent.click(screen.getByRole('button', {
+          name: /By newest/i,
+        }));
+        fireEvent.click(screen.getByRole('link', {
+          name: sortBy,
+        }));
+        const videoElements = screen.getAllByRole('button', { name: /client_id/ });
+        order.forEach((clientIdSuffix, idx) => {
+          expect(videoElements[idx]).toHaveTextContent(`client_id_${clientIdSuffix}`);
+        });
       });
     });
     it.each([
@@ -167,29 +173,33 @@ describe('VideoGallery', () => {
         }],
       });
 
-      act(() => {
-        fireEvent.click(screen.getByTestId('dropdown-filter'));
-      });
+      waitFor(async () => {
+        act(() => {
+          fireEvent.click(screen.getByTestId('dropdown-filter'));
+        });
 
-      act(() => {
-        fireEvent.click(screen.getByRole('button', {
-          name: filterBy,
-        }));
-      });
+        act(() => {
+          fireEvent.click(screen.getByRole('button', {
+            name: filterBy,
+          }));
+        });
 
-      const videoElements = await screen.findAllByRole('button', { name: /client_id/ });
-      expect(videoElements).toHaveLength(length);
-      items.forEach(clientIdx => (
-        expect(screen.getByText(`client_id_${clientIdx}`)).toBeInTheDocument()
-      ));
+        const videoElements = await screen.findAllByRole('button', { name: /client_id/ });
+        expect(videoElements).toHaveLength(length);
+        items.forEach(clientIdx => (
+          expect(screen.getByText(`client_id_${clientIdx}`)).toBeInTheDocument()
+        ));
+      });
     });
 
     it('filters videos by search string', async () => {
       await renderComponent();
-      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'CLIENT_ID_2' } });
-      expect(screen.queryByText('client_id_2')).toBeInTheDocument();
-      expect(screen.queryByText('client_id_1')).not.toBeInTheDocument();
-      expect(screen.queryByText('client_id_3')).not.toBeInTheDocument();
+      waitFor(() => {
+        fireEvent.change(screen.getByRole('textbox'), { target: { value: 'CLIENT_ID_2' } });
+        expect(screen.queryByText('client_id_2')).toBeInTheDocument();
+        expect(screen.queryByText('client_id_1')).not.toBeInTheDocument();
+        expect(screen.queryByText('client_id_3')).not.toBeInTheDocument();
+      });
     });
   });
 });
