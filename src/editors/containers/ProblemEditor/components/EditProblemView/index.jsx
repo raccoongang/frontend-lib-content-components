@@ -48,6 +48,7 @@ export const EditProblemView = ({
         isAdvancedProblemType,
         editorRef,
         lmsEndpointUrl,
+        formatMessage: intl.formatMessage,
       })}
       returnFunction={returnFunction}
     >
@@ -69,6 +70,7 @@ export const EditProblemView = ({
                   isAdvanced: isAdvancedProblemType,
                   ref: editorRef,
                   lmsEndpointUrl,
+                  formatMessage: intl.formatMessage,
                 })(),
                 returnFunction,
                 destination: returnUrl,
