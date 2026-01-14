@@ -4,6 +4,7 @@
 import { XMLParser, XMLBuilder } from 'fast-xml-parser';
 import _ from 'lodash-es';
 import { ProblemTypeKeys, RichTextProblems, settingsOlxAttributes } from '../../../data/constants/problem';
+import messages from '../../../containers/ProblemEditor/components/EditProblemView/ExplanationWidget/messages';
 
 export const indexToLetterMap = [...Array(26)].map((val, i) => String.fromCharCode(i + 65));
 
@@ -61,7 +62,8 @@ export const stripNonTextTags = ({ input, tag }) => {
 };
 
 export class OLXParser {
-  constructor(olxString) {
+  constructor(olxString, { formatMessage } = {}) {
+    this.formatMessage = formatMessage;
     // There are two versions of the parsed XLM because the fields using tinymce require the order
     // of the parsed data and spacing values to be preserved. However, all the other widgets need
     // the data grouped by the wrapping tag. Examples of the parsed format can be found here:
@@ -571,17 +573,18 @@ export class OLXParser {
     const [solutionBody] = problemBody[problemType].filter(section => Object.keys(section).includes('solution'));
     const [divBody] = solutionBody.solution.filter(section => Object.keys(section).includes('div'));
     const solutionArray = [];
+    const explanationText = this.formatMessage ? this.formatMessage(messages.solutionWidgetTitle) : 'Explanation';
     if (divBody && divBody.div) {
       divBody.div.forEach(tag => {
         const tagText = _.get(Object.values(tag)[0][0], '#text', '');
-        if (tagText.toString().trim() !== 'Explanation') {
+        if (tagText.toString().trim() !== explanationText) {
           solutionArray.push(tag);
         }
       });
     } else {
       solutionBody.solution.forEach(tag => {
         const tagText = _.get(Object.values(tag)[0][0], '#text', '');
-        if (tagText.toString().trim() !== 'Explanation') {
+        if (tagText.toString().trim() !== explanationText) {
           solutionArray.push(tag);
         }
       });
