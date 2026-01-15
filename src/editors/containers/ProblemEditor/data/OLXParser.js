@@ -4,6 +4,7 @@
 import { XMLParser, XMLBuilder } from 'fast-xml-parser';
 import _ from 'lodash-es';
 import { ProblemTypeKeys, RichTextProblems, settingsOlxAttributes } from '../../../data/constants/problem';
+import { EXPLANATION_LABEL_TEXT } from './constants';
 
 export const indexToLetterMap = [...Array(26)].map((val, i) => String.fromCharCode(i + 65));
 
@@ -574,14 +575,14 @@ export class OLXParser {
     if (divBody && divBody.div) {
       divBody.div.forEach(tag => {
         const tagText = _.get(Object.values(tag)[0][0], '#text', '');
-        if (tagText.toString().trim() !== 'Explanation') {
+        if (tagText.toString().trim() !== EXPLANATION_LABEL_TEXT) {
           solutionArray.push(tag);
         }
       });
     } else {
       solutionBody.solution.forEach(tag => {
         const tagText = _.get(Object.values(tag)[0][0], '#text', '');
-        if (tagText.toString().trim() !== 'Explanation') {
+        if (tagText.toString().trim() !== EXPLANATION_LABEL_TEXT) {
           solutionArray.push(tag);
         }
       });
