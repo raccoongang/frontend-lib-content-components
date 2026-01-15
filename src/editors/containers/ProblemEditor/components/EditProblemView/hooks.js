@@ -57,14 +57,10 @@ export const parseState = ({
   isAdvanced,
   ref,
   lmsEndpointUrl,
-  formatMessage,
 }) => () => {
   const rawOLX = ref?.current?.state.doc.toString();
   const editorObject = fetchEditorContent({ format: '' });
-  const reactOLXParser = new ReactStateOLXParser(
-    { problem, editorObject },
-    { formatMessage },
-  );
+  const reactOLXParser = new ReactStateOLXParser({ problem, editorObject });
   const reactSettingsParser = new ReactStateSettingsParser({ problem, rawOLX });
   const reactBuiltOlx = setAssetToStaticUrl({ editorValue: reactOLXParser.buildOLX(), lmsEndpointUrl });
   return {
@@ -147,7 +143,6 @@ export const getContent = ({
   isAdvancedProblemType,
   editorRef,
   lmsEndpointUrl,
-  formatMessage,
 }) => {
   const problem = problemState;
   const hasNoAnswers = isAdvancedProblemType ? false : checkForNoAnswers({
@@ -165,7 +160,6 @@ export const getContent = ({
       ref: editorRef,
       problem,
       lmsEndpointUrl,
-      formatMessage,
     })();
     return data;
   }
